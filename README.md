@@ -25,7 +25,7 @@ cd frontend && npm install && cd ..
 
 # Configure environment
 cp .env.example .env
-# Edit .env and add your Gemini API key
+# Edit .env and add your OpenAI API key
 ```
 
 ### 3. Run the Application
