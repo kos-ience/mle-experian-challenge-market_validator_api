@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace Validator - Credit Card Listing Validator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .input-section, .results-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #4a5568;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .status-compliant {
+            background: #48bb78;
+            color: white;
+        }
+
+        .status-non-compliant {
+            background: #f56565;
+            color: white;
+        }
+
+        .score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .issues-list {
+            margin-top: 20px;
+        }
+
+        .issue-item {
+            background: #f7fafc;
+            border-left: 4px solid #f56565;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .issue-category {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .issue-description {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .issue-suggestion {
+            background: #e6fffa;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #38b2ac;
+            font-style: italic;
+        }
+
+        .severity-high { border-left-color: #f56565; }
+        .severity-medium { border-left-color: #ed8936; }
+        .severity-low { border-left-color: #48bb78; }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .example-section {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .example-section h3 {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .example-text {
+            font-size: 14px;
+            color: #718096;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .input-section, .results-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏪 Marketplace Validator</h1>
+            <p>Validate your credit card listings against marketplace standards</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">📝 Submit Your Listing</h2>
+                
+                <div class="example-section">
+                    <h3>Example Listing Format:</h3>
+                    <div class="example-text">
+                        <strong>Card Name:</strong> ClearPath Platinum by TrustBank<br><br>
+                        <strong>Brief Description:</strong> Simplify your finances with generous rewards...<br><br>
+                        <strong>Features:</strong><br>
+                        • Cashback: 3% on dining, 2% on gas<br>
+                        • Annual Fee: £0<br>
+                        • APR: 17.49%–25.49% variable APR
+                    </div>
+                </div>
+
+                <form id="validationForm">
+                    <div class="form-group">
+                        <label for="listing">Credit Card Listing Text:</label>
+                        <textarea 
+                            id="listing" 
+                            name="listing" 
+                            rows="15" 
+                            placeholder="Paste your credit card listing here..."
+                            required
+                        ></textarea>
+                    </div>
+                    <button type="submit" class="btn" id="validateBtn">
+                        🔍 Validate Listing
+                    </button>
+                </form>
+            </div>
+
+            <div class="results-section">
+                <h2 class="section-title">📊 Validation Results</h2>
+                <div id="results">
+                    <div style="text-align: center; color: #a0aec0; padding: 40px;">
+                        <p>Submit a listing to see validation results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        
+        document.getElementById('validationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const listing = document.getElementById('listing').value.trim();
+            if (!listing) {
+                alert('Please enter a listing to validate');
+                return;
+            }
+
+            const validateBtn = document.getElementById('validateBtn');
+            const resultsDiv = document.getElementById('results');
+            
+            // Show loading state
+            validateBtn.disabled = true;
+            validateBtn.textContent = '⏳ Validating...';
+            
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing your listing...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/validate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ listing })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                displayResults(result);
+
+            } catch (error) {
+                console.error('Validation error:', error);
+                resultsDiv.innerHTML = `
+                    <div style="text-align: center; color: #f56565; padding: 20px;">
+                        <p><strong>❌ Error:</strong> ${error.message}</p>
+                        <p>Please make sure the backend API is running on port 8000</p>
+                    </div>
+                `;
+            } finally {
+                validateBtn.disabled = false;
+                validateBtn.textContent = '🔍 Validate Listing';
+            }
+        });
+
+        function displayResults(result) {
+            const resultsDiv = document.getElementById('results');
+            
+            const statusClass = result.status === 'compliant' ? 'status-compliant' : 'status-non-compliant';
+            const statusText = result.status === 'compliant' ? '✅ Compliant' : '❌ Non-Compliant';
+            
+            let issuesHtml = '';
+            if (result.issues && result.issues.length > 0) {
+                issuesHtml = `
+                    <div class="issues-list">
+                        <h3>Issues Found:</h3>
+                        ${result.issues.map(issue => `
+                            <div class="issue-item severity-${issue.severity}">
+                                <div class="issue-category">${issue.category} - ${issue.rule_violated}</div>
+                                <div class="issue-description">
+                                    <strong>Issue:</strong> ${issue.issue}<br>
+                                    <strong>Current Text:</strong> "${issue.current_text}"
+                                </div>
+                                <div class="issue-suggestion">
+                                    <strong>💡 Suggestion:</strong> ${issue.suggested_fix}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = `
+                <div class="status-badge ${statusClass}">${statusText}</div>
+                <div class="score">Score: ${result.compliance_score}/10</div>
+                
+                <div style="margin-bottom: 20px;">
+                    <strong>Word Count:</strong> ${result.word_count} words<br>
+                    <strong>Reading Level:</strong> ${result.reading_level || 'Not assessed'}
+                </div>
+                
+                <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <strong>📋 Overall Suggestions:</strong><br>
+                    ${result.suggestions}
+                </div>
+                
+                ${issuesHtml}
+            `;
+        }
+
+        // Check API health on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    console.log('✅ Backend API is running');
+                } else {
+                    console.warn('⚠️ Backend API health check failed');
+                }
+            } catch (error) {
+                console.warn('⚠️ Backend API is not accessible:', error.message);
+            }
+        });
+    </script>
+</body>
+</html>
